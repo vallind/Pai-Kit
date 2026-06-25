@@ -10,7 +10,6 @@
 #   - Repository: interface XxxRepository                       （core/domain/，KMP-ready，无 Android/Retrofit/Room 依赖）
 #   - RepositoryImpl: @Singleton class XxxRepositoryImpl @Inject constructor(api, dao) : XxxRepository
 #                                                             （core/data/，@Binds 绑定到接口）
-#   - Test:       MockK 骨架，构造 Impl、断言接口类型
 #
 # 自动编辑（高风险，失败时打印手动指引）：
 #   - AppDatabase.kt:        entities 数组追加 XxxEntity::class + version +1 + abstract fun xxxDao()
@@ -352,7 +351,6 @@ package com.pai.app.core.domain.model
  * __PASCAL__ 领域模型
  *
  * 决策 P1-1：domain model 放 [com.pai.app.core.domain.model] 包（KMP-ready，
- * **无 Android / Retrofit / Room 依赖**，由 Konsist 红线守护）。
  *
  * 决策 8：[com.pai.app.core.domain.__PASCAL__Repository] 接口是唯一的数据出口，
  * 禁止把 Room Entity（[com.pai.app.core.database.entity.__PASCAL__Entity]）
@@ -398,12 +396,10 @@ import kotlinx.coroutines.flow.Flow
  * __PASCAL__ Repository 接口（domain layer）
  *
  * 决策 P1-1：接口在 [com.pai.app.core.domain] 包（KMP-ready，**无 Android / Retrofit /
- * Room 依赖**，由 Konsist 红线守护）；实现在
  * [com.pai.app.core.data.__PASCAL__RepositoryImpl]（`@Inject constructor` + `@Singleton`）。
  *
  * feature 层注入本接口（非 Impl），由 Hilt `@Binds`（见
  * [com.pai.app.core.data.di.DataModule]）解析到 Impl。这样实现的替换
- * （如 KMP 时 iOS 各自实现、测试时 mockk）对调用方零感知。
  *
  * 设计要点（决策 1 + 决策 8 + P1-1）：
  * 1. 本接口只暴露 domain model [__PASCAL__Item] —— **不**返回 Room Entity 或网络 DTO
@@ -586,9 +582,6 @@ import com.pai.app.core.domain.__PASCAL__Repository
 import com.pai.app.core.domain.model.__PASCAL__Item
 import com.pai.app.core.network.AppApi
 import com.pai.app.core.network.model.__PASCAL__Dto
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -618,14 +611,11 @@ import java.io.IOException
  * - observe__PASCAL__s() Success 路径：Room Flow 的 Entity 列表映射为 __PASCAL__Item 列表
  * - syncToCache() 把 DTO 列表 upsertAll 到 DAO（Entity 不外泄）
  *
- * 用 MockK mock [AppApi] + [__PASCAL__Dao]；不依赖真实网络/数据库。
  * 参考 ExampleRepositoryTest.kt 的完整测试模式。
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class __PASCAL__RepositoryTest {
 
-    private val api: AppApi = mockk(relaxed = true)
-    private val __CAMEL__Dao: __PASCAL__Dao = mockk(relaxed = true)
 
     // 决策 P1-1：用 Impl 类型变量 —— 需要调用 syncToCache（Impl 具体方法，不在接口中）
     private lateinit var repository: __PASCAL__RepositoryImpl
@@ -1060,7 +1050,6 @@ binds_method = (
     f"     * 绑定 [{pascal}Repository] 接口到 [{pascal}RepositoryImpl] 实现\n"
     f"     *\n"
     f"     * - feature 注入 `{pascal}Repository` 时，Hilt 解析为 `{pascal}RepositoryImpl` 单例\n"
-    f"     * - 测试中可直接 `mockk<{pascal}Repository>()` 替换，无需 Hilt 图\n"
     f"     */\n"
     f"    @Binds\n"
     f"    @Singleton\n"

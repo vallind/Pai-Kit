@@ -8,7 +8,6 @@
 #   - Screen:    @Composable internal fun, uses DSAppScaffold + DS components (no raw M3)
 #   - Route:     @Serializable data object XxxRoute : AppRoute
 #   - NavExt:    internal fun AppNavigator.gotoXxx() { navigate(XxxRoute) }
-#   - Test:      MainDispatcherRule + MockK + runTest 骨架
 #
 # 用法:
 #   ./scripts/new-feature.sh <name> [--with-repository] [--dry-run] [--force]
@@ -364,8 +363,6 @@ import com.pai.app.core.datastore.UserPreferences
 import com.pai.app.navigation.AppNavigator
 import com.pai.app.navigation.UserState
 import com.pai.app.testing.MainDispatcherRule
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
@@ -396,8 +393,6 @@ class __PASCAL__ViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val appNavigator: AppNavigator = mockk(relaxed = true)
-    private val userPreferences: UserPreferences = mockk(relaxed = true)
 
     /** 应用级协程作用域，用于构造 UserState */
     private val appScope = TestScope(mainDispatcherRule.testDispatcher)

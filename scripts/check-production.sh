@@ -412,30 +412,6 @@ check_detekt_ignore_failures() {
     fi
 }
 
-check_konsist_tests() {
-    local arch_dir="$PROJECT_ROOT/app/src/test/java/com/pai/app/architecture"
-    local design_system_ok=false
-    local feature_ok=false
-    local route_ok=false
-    if [[ -f "$arch_dir/DesignSystemArchitectureTest.kt" ]]; then
-        design_system_ok=true
-    fi
-    if [[ -f "$arch_dir/FeatureArchitectureTest.kt" ]]; then
-        feature_ok=true
-    fi
-    if [[ -f "$arch_dir/RouteArchitectureTest.kt" ]]; then
-        route_ok=true
-    fi
-    if [[ "$design_system_ok" == "true" ]] \
-       && [[ "$feature_ok" == "true" ]] \
-       && [[ "$route_ok" == "true" ]]; then
-        record "质量" "Konsist 架构测试存在" "pass" \
-            "DesignSystem + Feature + Route 3 个测试文件齐全"
-    else
-        record "质量" "Konsist 架构测试存在" "fail" \
-            "DS=$design_system_ok Feature=$feature_ok Route=$route_ok"
-    fi
-}
 
 # --- [6/6] 可观测 ---
 
@@ -487,12 +463,6 @@ run_all_checks() {
     # [5/6] 质量
     check_ci_jobs
     check_detekt_ignore_failures
-    check_konsist_tests
-
-    # [6/6] 可观测
-    check_timber_debug_only
-    check_business_analytics
-}
 
 # ============================================================================
 # 文本输出

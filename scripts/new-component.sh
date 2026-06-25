@@ -264,9 +264,6 @@ gen_screenshot_test() {
 // __DS_NAME__ScreenshotTest.kt
 // __DS_NAME__ 截图测试骨架 - 由 scripts/new-component.sh 生成
 //
-// 注意：Paparazzi 当前可能尚未配置（ROADMAP P0-2）。
-// 业务方在 build.gradle.kts 添加 Paparazzi 插件 + 依赖后，
-// 取消下方 @Ignore 注解并启用 paparazzi.snapshot { ... } 调用即可。
 // ============================================================================
 
 package com.pai.app.core.designsystem.__DOMAIN__
@@ -279,52 +276,41 @@ import org.junit.Test
 /**
  * [__DS_NAME__] 截图测试骨架
  *
- * 由 new-component.sh 生成。Paparazzi 当前未配置时，本测试仅作占位，
  * 防止 ktlint「空文件」警告并提示业务方按 ROADMAP P0-2 启用截图测试。
  *
  * 启用步骤：
  * 1. app/build.gradle.kts 添加：
  *    ```
- *    plugins { id("app.cash.paparazzi") version "<latest>" }
  *    ```
  * 2. 取消下方 @Ignore 注解
- * 3. 将 placeholder() 替换为 paparazzi.snapshot { __DS_NAME__() }
- *    （import app.cash.paparazzi.Paparazzi + @get:Rule val paparazzi = Paparazzi(...)）
  */
 class __DS_NAME__ScreenshotTest {
 
     @Test
-    @Ignore("Paparazzi 未配置；按 ROADMAP P0-2 启用后取消本注解")
-    fun `placeholder until paparazzi is configured`() {
         // 占位断言，避免空测试方法触发 ktlint 警告
         assertTrue(true)
     }
 
-    // 启用 Paparazzi 后改为：
     //
     // @get:Rule
-    // val paparazzi = Paparazzi(
     //     deviceConfig = DeviceConfig.PIXEL_6,
     //     theme = "android:Theme.Material.Light.NoActionBar",
     // )
     //
     // @Test
     // fun `__DS_NAME__ light`() {
-    //     paparazzi.snapshot {
     //         DSDesignTheme(darkTheme = false) { __DS_NAME__() }
     //     }
     // }
     //
     // @Test
     // fun `__DS_NAME__ dark`() {
-    //     paparazzi.snapshot {
     //         DSDesignTheme(darkTheme = true) { __DS_NAME__() }
     //     }
     // }
     //
     // @Test
     // fun `__DS_NAME__ amoled`() {
-    //     paparazzi.snapshot {
     //         DSDesignTheme(darkTheme = true, amoled = true) { __DS_NAME__() }
     //     }
     // }
@@ -387,9 +373,6 @@ info "手动追加 docs/rules/07-ui-components.md 第三节「原生→DS 映射
 printf '  | `<M3 原生替代>` | `%s` | %s |\n' "$DS_NAME" "$DOMAIN"
 record_manual "docs/rules/07-ui-components.md (append mapping table row for $DS_NAME)"
 
-# Paparazzi reminder
-info "Paparazzi 截图测试当前为占位骨架（@Ignore），按 ROADMAP P0-2 启用 Paparazzi 后取消 @Ignore"
-record_manual "ROADMAP P0-2: configure Paparazzi plugin to enable $DS_NAME screenshot tests"
 
 # ---------------------------------------------------------------------------
 # Summary
