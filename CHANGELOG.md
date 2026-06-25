@@ -5,12 +5,29 @@
 
 ## [Unreleased]
 
-### Added
-### Changed
-### Deprecated
-### Removed
+## [1.2.0] - 2026-06-25
+
 ### Fixed
-### Security
+- 编译修复：Paparazzi Gradle 插件依赖缺失（`build-logic` 添加 `paparazzi-gradle-plugin`）
+- 编译修复：Kotlin 2.3.21 trailing lambda 行为变更 — `DSContextMenuItem` / `DSTopBarAction` 参数重排序
+- 编译修复：Compose M3 1.9+ API 迁移（`SegmentedButton`/`RangeSliderDefaults`/`ElevatedButtonDefaults`/`BottomSheetScaffold`/`AlertDialogDefaults` 等）
+- 编译修复：`isDebugInspectorInfoEnabled` → `LocalInspectionMode`
+- 编译修复：`DSDuration` → `DSTokens.Duration`、`DSIcon(icon=)` → `imageVector=`、`DSIconSize.MD` → `Medium`、`DSAvatarSize.Medium` → `Medium40`
+- 编译修复：`DSDialogType` → `DSMessageType`、`DSBadgeType.Error` → `Text`、`DSTextColor.OnSurfaceVariant` → `Secondary`
+- 编译修复：16 处缺少的 import（`BrandRose100/300/800`、`BrandEmerald100/300/800`、`DSIconTint`、Material Icons 等）
+- 编译修复：`SectionCard` 多文件重名冲突 — `GalleryLayoutPage` 重命名为 `LayoutPageSectionCard`
+- UI 修复：`DSAppScaffold` 双层 padding 导致页面顶部大块空白
+- UI 修复：`DSPagination` 首末页重复（页码 1 和 20 出现两次）
+- UI 修复：`DSPagination` 自适应居中布局，按屏幕宽度动态调整兄弟页数
+- UI 修复：`loading.json` 旋转动画不可见 — 改用 Trim Paths 缺口圆环加载器
+- API 修复：`DSSharedTransition` 适配新的 `SharedTransitionScope` lambda 签名
+- API 修复：`DSLottieAnimation` 恢复原始 `animateLottieCompositionAsState` 实现
+- 依赖修复：`DSTextArea` 移除不存在的 `counter` 参数
+
+### Changed
+- `DSCardStyle` 可见性从 `internal` 改为 `public`（被 `AppCommonCard`/`AppStructuredCard` 使用）
+- 优化性能诊断工具 `DSPerformanceUtils` 不兼容 Compose 1.9 API 的引用
+- 移除 `RangeSliderDefaults` 和 `ElevatedButtonDefaults` 等已废弃 M3 API 引用
 
 ## [1.1.0] - 2026-06-22
 
