@@ -1,0 +1,24 @@
+*.iml
+.gradle
+local.properties
+/.idea/
+.DS_Store
+**/build/
+captures/
+.externalNativeBuild
+.cxx/
+*.hprof
+*.apk
+*.aab
+bin/
+gen/
+out/
+/.kotlin/
+
+# AI 工具临时文件
+.claude/cache/
+.claude/logs/
+.opencode/
+.aider*
+CLAUDE.local.md
+AGENTS.local.md

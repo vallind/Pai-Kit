@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md",
+    "docs/rules/00-documentation-protocol.md",
+    "app/src/main/java/com/pai/app/navigation/routes/AppRoutes.kt"
+  ]
+}

@@ -1,0 +1,226 @@
+# ============================================================================
+# detekt.yml - Detekt 静态分析配置
+# 基于 detekt 1.23.7 默认配置，针对单模块项目调整
+# ============================================================================
+
+build:
+  maxIssues: 0  # 0 = 有任何 issue 就失败；如需放宽可设为更大值
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+processors:
+  active: true
+  exclude:
+    - 'DetektProgressListener'
+
+# ---------------------------------------------------------------------------
+# 代码复杂度
+# ---------------------------------------------------------------------------
+complexity:
+  active: true
+  LongMethod:
+    active: true
+    threshold: 80  # 单方法 80 行（默认 60，放宽以适应 Composable）
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 10
+    ignoreDefaultParameters: true
+  ComplexCondition:
+    active: true
+    threshold: 5
+  ComplexInterface:
+    active: false  # 禁用（接口默认有多个实现）
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 20
+  LargeClass:
+    active: true
+    threshold: 250  # 单类 250 行（默认 200，放宽以适应 ViewModel + UiState 合并）
+  NestedBlockDepth:
+    active: true
+    threshold: 5
+  TooManyFunctions:
+    active: false  # 禁用（feature 文件常含多个 Composable）
+  TooLongImplementationList:
+    active: false
+
+# ---------------------------------------------------------------------------
+# 代码空缺
+# ---------------------------------------------------------------------------
+empty-blocks:
+  active: true
+  EmptyFunctionBlock:
+    active: true
+    ignoreOverridden: true  # 允许空 override
+  EmptyClassBlock:
+    active: true
+  EmptyKtFile:
+    active: true
+
+# ---------------------------------------------------------------------------
+# 异常处理
+# ---------------------------------------------------------------------------
+exceptions:
+  active: true
+  SwallowedException:
+    active: false  # 禁用（部分 catch 块需要吞异常）
+  TooGenericExceptionCaught:
+    active: false  # 禁用（允许 catch Exception）
+  TooGenericExceptionThrown:
+    active: true
+  InstanceOfCheckForException:
+    active: false
+
+# ---------------------------------------------------------------------------
+# 命名规范
+# ---------------------------------------------------------------------------
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+    excludeClassWithPattern: '.*Composable|.*Screen|.*Preview'
+  FunctionParameterNaming:
+    active: true
+    parameterPattern: '[a-z][A-Za-z0-9]*'
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][A-Za-z0-9]*'
+  ConstantNaming:
+    active: true
+    constantPattern: '[A-Z][A-Z0-9_]*'
+  PackageNaming:
+    active: true
+    packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9]*)*'
+  TopLevelPropertyNaming:
+    active: false
+  ObjectPropertyNaming:
+    active: false
+
+# ---------------------------------------------------------------------------
+# 性能
+# ---------------------------------------------------------------------------
+performance:
+  active: true
+  ForEachOnRange:
+    active: true
+  SpreadOperator:
+    active: true
+  UnnecessaryTemporaryInstantiation:
+    active: true
+
+# ---------------------------------------------------------------------------
+# 潜在 Bug
+# ---------------------------------------------------------------------------
+potential-bugs:
+  active: true
+  Deprecation:
+    active: false
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+  EqualsWithHashCodeExist:
+    active: true
+  IteratorNotThrowingNoSuchElementException:
+    active: true
+  UnreachableCode:
+    active: true
+  UnsafeCallOnNullableType:
+    active: true
+  UselessPostfixExpression:
+    active: true
+
+# ---------------------------------------------------------------------------
+# 代码风格
+# ---------------------------------------------------------------------------
+style:
+  active: true
+  ReturnCount:
+    active: false  # 禁用（早期 return 是常见模式）
+  WildcardImport:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**']  # 测试代码允许通配符 import
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: true
+  MagicNumber:
+    active: true
+    # 测试与预览代码大量使用魔数（颜色/尺寸示例），生产代码需检查
+    excludes:
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/*Preview*.kt'
+      - '**/preview/**/*.kt'
+    ignoreNumbers: '-1, 0, 1, 2'
+    ignorePropertyDeclaration: true   # DS Token 属性允许字面量（如 val spacing = 16.dp）
+    ignoreLocalVariableDeclaration: true
+    ignoreValueParameter: true        # 默认参数值允许魔数
+  ForbiddenComment:
+    active: false  # 允许 TODO/FIXME
+  ForbiddenImport:
+    active: true
+    # 禁止 feature 层直接用 M3 原生组件（必须用 DS* 封装）
+    # designsystem 内部允许用原生（它是封装层）
+    # 每个模式均以 `$` 锁定到完整导入路径末尾，避免与子路径（如 `ButtonDefaults`）误匹配
+    imports:
+      - 'androidx.compose.material3.Button$'
+      - 'androidx.compose.material3.OutlinedButton$'
+      - 'androidx.compose.material3.TextButton$'
+      - 'androidx.compose.material3.FilledTonalButton$'
+      - 'androidx.compose.material3.Card$'
+      - 'androidx.compose.material3.ElevatedCard$'
+      - 'androidx.compose.material3.OutlinedCard$'
+      - 'androidx.compose.material3.TopAppBar$'
+      - 'androidx.compose.material3.CenterAlignedTopAppBar$'
+      - 'androidx.compose.material3.MediumTopAppBar$'
+      - 'androidx.compose.material3.NavigationBar$'
+      - 'androidx.compose.material3.TextField$'
+      - 'androidx.compose.material3.OutlinedTextField$'
+      - 'androidx.compose.material3.Checkbox$'
+      - 'androidx.compose.material3.Switch$'
+      - 'androidx.compose.material3.RadioButton$'
+      - 'androidx.compose.material3.Slider$'
+      - 'androidx.compose.material3.AlertDialog$'
+      - 'androidx.compose.material3.Snackbar$'
+      - 'androidx.compose.material3.SnackbarHost$'
+      # 注意：SnackbarHostState 是状态持有者（非视觉组件），DSAppScaffold API 需要
+      # 调用方传入该实例，故 feature 层允许 import。仅禁视觉组件 SnackbarHost。
+      - 'androidx.compose.material3.LinearProgressIndicator$'
+      - 'androidx.compose.material3.CircularProgressIndicator$'
+      - 'androidx.compose.material3.IconButton$'
+      - 'androidx.compose.material3.FloatingActionButton$'
+      - 'androidx.compose.material3.ExtendedFloatingActionButton$'
+      - 'androidx.compose.material3.TabRow$'
+      - 'androidx.compose.material3.SegmentedButton$'
+      - 'androidx.compose.material3.Scaffold$'
+      - 'androidx.compose.material3.Icon$'
+      - 'androidx.compose.material3.Text$'
+      - 'androidx.compose.material3.Surface$'
+    # designsystem 包内豁免（它是封装层，允许用原生）
+    excludes:
+      - '.*core/designsystem/.*'
+  FunctionOnlyReturningConstant:
+    active: false
+  LoopWithTooManyJumpStatements:
+    active: false
+  NestedClassesVisibility:
+    active: true
+  NewLineAtEndOfFile:
+    active: true
+  UnusedPrivateMember:
+    active: true
+    allowedNames: '(_|ignored|expected)'
+  UseDataClass:
+    active: true
+  UseEmptyCounterpart:
+    active: false
+  UtilityClassWithPublicConstructor:
+    active: false

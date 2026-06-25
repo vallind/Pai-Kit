@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 默认禁用明文流量 -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <!-- Debug 构建允许用户安装证书便于抓包 -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+    <!-- 生产环境证书锁定模板（业务方按域名配置）：
+    <domain-config>
+        <domain includeSubdomains="true">api.example.com</domain>
+        <pin-set expiration="2026-12-31">
+            <pin digest="SHA-256">替换为实际证书指纹</pin>
+            <pin digest="SHA-256">备份证书指纹</pin>
+        </pin-set>
+    </domain-config>
+    -->
+</network-security-config>
