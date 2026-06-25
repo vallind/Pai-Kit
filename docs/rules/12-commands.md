@@ -41,7 +41,6 @@
 # 单个测试方法
 ./gradlew :app:testDebugUnitTest --tests "com.pai.app.feature.auth.AuthViewModelTest.登录成功后 state 更新"
 
-# Konsist 架构测试（designsystem 5 层 + feature 隔离 + 跨层短路 + ViewModel 继承 + 路由类型安全）
 ./gradlew :app:testDebugUnitTest --tests "com.pai.app.architecture.*"
 
 # UI 测试（需连接设备或模拟器，需 HiltTestRunner）

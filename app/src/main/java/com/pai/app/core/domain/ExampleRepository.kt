@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
  * 示例 Repository 接口（domain layer）
  *
  * 决策 P1-1：接口在 [com.pai.app.core.domain] 包（KMP-ready，**无 Android / Retrofit /
- * Room 依赖**，Konsist 守护）；实现在
+ * Room 依赖**）；实现在
  * [com.pai.app.core.data.ExampleRepositoryImpl]（`@Inject constructor` + `@Singleton`）。
  *
  * 仅作模板演示，业务方拉取脚手架后应：

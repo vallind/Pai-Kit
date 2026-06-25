@@ -13,12 +13,12 @@ import com.pai.app.core.domain.model.UserItem
  * 鉴权仓库接口（domain layer）
  *
  * 决策 P1-1：接口在 [com.pai.app.core.domain] 包（KMP-ready，**无 Android / Retrofit /
- * Room 依赖**，Konsist 守护）；实现在
+ * Room 依赖**）；实现在
  * [com.pai.app.core.data.AuthRepositoryImpl]（`@Inject constructor` + `@Singleton`）。
  *
  * feature 层（如 [com.pai.app.feature.auth.AuthViewModel]）注入本接口而非实现，
  * 由 Hilt `@Binds`（见 [com.pai.app.core.data.di.DataModule]）解析到 Impl。
- * 这样实现的替换（如 KMP 时 iOS 各自实现、测试时 mockk）对调用方零感知。
+ * 这样实现的替换（如 KMP 时 iOS 各自实现）对调用方零感知。
  *
  * 决策 8：本接口**不**返回 Room `UserEntity`（`internal`，不外泄），改返回
  * domain model [UserItem]（[com.pai.app.core.data.AuthRepositoryImpl] 内部完成映射）。

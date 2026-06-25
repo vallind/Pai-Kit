@@ -43,7 +43,6 @@ abstract class DataModule {
      * 绑定 [AuthRepository] 接口到 [AuthRepositoryImpl] 实现
      *
      * - feature 注入 `AuthRepository` 时，Hilt 解析为 `AuthRepositoryImpl` 单例
-     * - 测试中可直接 `mockk<AuthRepository>()` 替换，无需 Hilt 图
      */
     @Binds
     @Singleton

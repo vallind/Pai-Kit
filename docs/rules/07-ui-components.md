@@ -46,7 +46,6 @@ Feature 层（允许依赖 primitives/patterns/shell/overlays/containers）
 Container（业务容器壳）依赖 Primitives + Patterns
 ```
 
-### 四条架构红线（Konsist + Detekt 自动检查）
 
 1. **禁止平级跨域调用**：shell ↔ overlays 之间零引用
 2. **禁止底层依赖高层**：primitives 不能引用 patterns/shell/overlays

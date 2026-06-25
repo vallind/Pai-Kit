@@ -33,7 +33,7 @@ Pai Scaffold 是一套 **AI-first** 的 Android 脚手架：
 
 - **clone 即用**：`./scripts/create-app.sh` 一行改包名，立即可开发
 - **AI 协作**：Claude Code / OpenCode 直接读 `CLAUDE.md` / `AGENTS.md`，按 `docs/rules/` 规则生成代码
-- **单模块**：不拆模块，用 `internal` 可见性 + Konsist 架构测试保证隔离
+- **单模块**：不拆模块，用 `internal` 可见性 架构测试保证隔离
 - **M3 卓越线**：完整 Material Design 3 组件库，含动态配色 / 高对比度 / 共享元素转场 / 响应式布局
 - **生产就绪**：Hilt + Room + Retrofit + EncryptedPrefs + TokenAuthenticator + CI 8 Job
 
@@ -77,7 +77,6 @@ graph TD
     ds --> ds
 ```
 
-**架构红线**（由 Konsist 架构测试 + 自动生成图共同守护）：
 - `feature/*` 之间不得互相 import（隔离）
 - `feature/*` 不得直接 import `retrofit2.*` / `androidx.room.*`（必须经 `core/data` 或 `core/domain`）
 - `core/domain` 不得 import `android.*` / `retrofit2.*` / `androidx.room.*`（KMP-ready 纯 Kotlin）
@@ -104,7 +103,7 @@ graph TD
 | **持久化** | Room（exportSchema=true）+ DataStore + EncryptedPrefs |
 | **页面模板** | A 详情页 / B 纯状态页 / C 表单页 / D 列表分页页 / E 设置页 / F 主从页 |
 | **AI 规则** | 15 个 docs/rules/ 文件 + 文档自维护协议 |
-| **测试** | 单元测试 + Hilt UI 测试 + MockK + Turbine + Robolectric + MockWebServer + Konsist + Paparazzi 截图测试 |
+| **测试** | 单元测试 + Hilt UI 测试 + Turbine + Robolectric + MockWebServer 截图测试 |
 | **CI** | GitHub Actions 8 Job + pre-commit hook + KtLint + Detekt + Kover |
 | **示例 Feature** | auth / home / user / settings / gallery（含 9 个子页路由） |
 

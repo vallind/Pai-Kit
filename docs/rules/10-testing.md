@@ -12,7 +12,7 @@ app/src/
 ├── test/java/com/pai/app/                    # 单元测试（JVM）
 │   ├── testing/                              # 测试工具
 │   │   └── MainDispatcherRule.kt
-│   ├── architecture/                         # Konsist 架构测试
+│   ├── architecture/                         # 架构测试
 │   │   ├── DesignSystemArchitectureTest.kt
 │   │   ├── FeatureArchitectureTest.kt
 │   │   └── RouteArchitectureTest.kt
@@ -32,18 +32,15 @@ app/src/
 | `androidTest/` | UI 测试 / 需 Context 的测试（Hilt） | 需连接设备或模拟器 |
 | `testing/` | 测试工具共享包（Rule） | 被两类测试共享 |
 
-> 旧的 `Fakes.kt`（`FakePostRepository` / `FakeThemePreferences` / `FakeUserPreferences`）已删除。统一用 **MockK** mock Repository 依赖（AppApi / UserPreferences / EncryptedPrefs）。
 
 ---
 
 ## 二、测试工具
 
 - **MainDispatcherRule**：替换 `Dispatchers.Main` 为 `StandardTestDispatcher`（注意：是 `StandardTestDispatcher` 不是 `UnconfinedTestDispatcher`，需手动 `advanceUntilIdle()`）
-- **MockK**：mock 接口与具体类（`@RelaxedMockK` / `coEvery` / `coVerify` / `verify`）
 - **Turbine**：测试 Flow（`someFlow.test { awaitItem(); ... }`）
 - **Robolectric**：测试需要 Android Context 的代码（如 DataStore；注意 EncryptedSharedPreferences 在 Robolectric 下可能不稳定，见 `13-troubleshooting.md`）
 - **MockWebServer**：测试 Repository 真实 HTTP 调用（参考 `NetworkModuleTest` / `AppApiTest`）
-- **Konsist**：架构测试（见 §七）
 - **Hilt Android Testing**：`@HiltAndroidTest` + `HiltAndroidRule` + `HiltTestRunner` + `HiltComponentActivity`（UI 测试）
 
 ### 2.1 MainDispatcherRule（StandardTestDispatcher）
@@ -72,18 +69,14 @@ fun `xxx`() = runTest {
 }
 ```
 
-### 2.2 Mock Repository 模式（用 MockK，不再用 Fakes）
 
 ```kotlin
 class PostViewModelTest {
-    @RelaxedMockK private lateinit var repository: PostRepository
-    @RelaxedMockK private lateinit var userState: UserState
     private lateinit var navigator: AppNavigator
     private lateinit var viewModel: PostViewModel
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this)
         navigator = AppNavigator(FakeUserState()).apply { /* setup */ }
         viewModel = PostViewModel(navigator, userState, repository)
     }
@@ -246,9 +239,7 @@ class AuthViewModelTest {
 
 ---
 
-## 七、Konsist 架构测试
 
-`app/src/test/java/com/pai/app/architecture/` 下用 [Konsist](https://docs.konsist.lemonappdev.com/) 静态扫描 import 关系，CI 中自动运行（`unit-test` Job），违反依赖方向则编译失败。
 
 ### 7.1 测试覆盖的架构红线
 
@@ -273,9 +264,8 @@ class AuthViewModelTest {
 ### 7.3 新增架构约束时的更新流程
 
 1. 在对应 `*ArchitectureTest.kt` 追加 `@Test fun `xxx should not depend on yyy`() { ... }`
-2. 用 `Konsist.scopeFromPackage("com.pai.app.xxx..").files.assert { file -> file.imports.none { ... } }` 校验
 3. 在本文件 7.1 表格中追加一行说明
-4. 在回复中汇报：「已更新 docs/rules/10-testing.md，追加 Konsist 测试 xxx」
+4. 在回复中汇报：「已更新 docs/rules/10-testing.md，追加 测试 xxx」
 
 > 详见 `14-development-workflow.md` 的脚手架扩展场景。
 

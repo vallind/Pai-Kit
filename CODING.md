@@ -125,7 +125,6 @@ com.pai.app/
 
 详见 [docs/rules/02-package-isolation.md](docs/rules/02-package-isolation.md)。
 
-### 3.1 架构红线（Konsist 自动检查）
 
 1. **`feature/*` 之间不得互相 import**（隔离）
 2. **`feature/*` 不得直接 import `retrofit2.*` / `androidx.room.*`**（必须经 `core/data` 或 `core/domain`）

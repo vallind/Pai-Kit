@@ -40,7 +40,7 @@ core/
 └── appstate/       MainActivityViewModel
 ```
 
-**domain 层 KMP-ready 红线**（Konsist 守护，见 `FeatureArchitectureTest.核心 domain 不依赖 Android 或 Retrofit 或 Room 或 network 或 database`）：
+**domain 层 KMP-ready 红线**`）：
 
 - `core.domain.*` **不得** import `android.*` / `androidx.*` / `retrofit2.*` /
   `com.pai.app.core.network.*` / `com.pai.app.core.database.*`
@@ -53,7 +53,6 @@ core/
 - feature 注入 Repository **接口**（`core.domain.*Repository`），不感知实现（`core.data.*RepositoryImpl`）
 - 接口在 `core/domain/`（KMP-ready），实现在 `core/data/`（`@Inject constructor` + `@Singleton`）
 - Hilt 通过 `core/data/di/DataModule.kt` 的 `@Binds` 绑定接口 → 实现
-- 测试中 `mockk<XxxRepository>()`（接口），或 `XxxRepositoryImpl(...)` 直接构造（Impl），
   两种方式都不破坏 feature 对接口的依赖
 
 ---
@@ -116,7 +115,7 @@ core/
 
 - `feature.*` 下的 ViewModel **只能**调用 `core.domain.*Repository`（**接口**，决策 P1-1）
 - ViewModel **不得** import `core.data.*RepositoryImpl`（实现细节，Hilt `@Binds` 解析）
-- **禁止**在 ViewModel 中直接 `import retrofit2.*` 或 `androidx.room.*`（Konsist 测试拦截）
+- **禁止**在 ViewModel 中直接 `import retrofit2.*` 或 `androidx.room.*`
 - **禁止**在 Composable 中直接调用 Repository / Retrofit / Room
 - 网络请求必须用 `safeApiCall { api.xxx() }` 包装为 `ApiResult<T>`，或用 `Flow<T>.asResult(): Flow<ApiResult<T>>` 包装 Flow
 - `AppApi` 返回纯 DTO（`@Serializable`），**不返回** sealed class

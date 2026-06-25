@@ -12,7 +12,6 @@
 | Job | 作用 | 触发条件 |
 |-----|------|---------|
 | **build** | 编译 Debug + Release | push / PR |
-| **unit-test** | 单元测试（含 Konsist 架构测试） | push / PR |
 | **ktlint** | 代码风格检查 | push / PR |
 | **detekt** | 静态分析 | push / PR |
 | **lint** | Android Lint（`:app:lintDebug`） | push / PR |

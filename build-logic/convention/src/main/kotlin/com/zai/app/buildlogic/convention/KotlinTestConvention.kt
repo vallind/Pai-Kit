@@ -15,7 +15,7 @@ import org.gradle.kotlin.dsl.getByType
  *  - AndroidX Test Core（Robolectric 中 ApplicationProvider 用）
  *
  * Instrumented 测试 (androidTestImplementation)：
- *  - AndroidX JUnit / Espresso / MockK-Android / Turbine / coroutines-test
+ *  - AndroidX JUnit / Espresso / Turbine / coroutines-test
  *  - Room testing / Hilt Android Testing
  *  - Compose UI test junit4（含 Compose BOM platform）
  *

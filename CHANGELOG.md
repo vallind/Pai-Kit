@@ -8,7 +8,6 @@
 ## [1.2.0] - 2026-06-25
 
 ### Fixed
-- 编译修复：Paparazzi Gradle 插件依赖缺失（`build-logic` 添加 `paparazzi-gradle-plugin`）
 - 编译修复：Kotlin 2.3.21 trailing lambda 行为变更 — `DSContextMenuItem` / `DSTopBarAction` 参数重排序
 - 编译修复：Compose M3 1.9+ API 迁移（`SegmentedButton`/`RangeSliderDefaults`/`ElevatedButtonDefaults`/`BottomSheetScaffold`/`AlertDialogDefaults` 等）
 - 编译修复：`isDebugInspectorInfoEnabled` → `LocalInspectionMode`
@@ -35,7 +34,6 @@
 - 新增 `EncryptedPrefs`：基于 EncryptedSharedPreferences（AES256-GCM）安全存储 token
 - 新增 `TokenAuthenticator`：支持 token 过期自动刷新
 - 新增 `DSChip` 组件
-- 新增架构测试（Konsist）：`FeatureArchitectureTest`、`RouteArchitectureTest`
 - 新增单元测试：`EncryptedPrefsTest`、`AppApiTest`、`AuthRepositoryTest`、`ExampleRepositoryTest`
 - 新增 `HiltComponentActivity`、`HiltTestRunner` 测试基础设施
 - 新增 `CHANGELOG.md`

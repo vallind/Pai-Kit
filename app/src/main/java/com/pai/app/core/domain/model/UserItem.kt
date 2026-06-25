@@ -11,7 +11,7 @@ package com.pai.app.core.domain.model
  *
  * 决策 P1-1：domain 层（[com.pai.app.core.domain]）必须 KMP-ready —— 纯 Kotlin
  * data class，**不得** import `android.*` / `androidx.*` / `retrofit2.*` /
- * `com.pai.app.core.network.*` / `com.pai.app.core.database.*`（Konsist 守护）。
+ * `com.pai.app.core.network.*` / `com.pai.app.core.database.*`。
  * 未来 KMP 迁移时，本文件原样移到 `shared/commonMain`。
  *
  * 由 [com.pai.app.core.data.AuthRepositoryImpl] 在登录成功后从

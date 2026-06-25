@@ -694,7 +694,7 @@ private fun ButtonAllThemesPreview() {
 
 - **新组件**：强制遵守 3 场景规范，禁止裸 @Preview
 - **旧组件**：逐步迁移，每次修改时补齐 PreviewScenes 包装
-- **CI 检查**：未来可通过 Konsist 架构测试自动检测裸 @Preview
+- **CI 检查**：未来可通过 架构测试自动检测裸 @Preview
 
 ---
 

@@ -9,7 +9,6 @@
 ## 零、用生成器而非手抄（推荐）
 
 > **AI-first**：本项目提供 3 个 Bash 生成器，**优先用生成器**而非手抄本文件的模板。
-> 生成器输出的代码已严格遵守 ktlint / detekt / Konsist 红线（含 P1-1 接口/实现分离、
 > `internal` 可见性、DS 组件、类型安全路由等），手抄易漏 import / 错放包 / 忘记 `@Binds`。
 
 ### 1. `scripts/new-feature.sh <name> [--with-repository] [--dry-run] [--force]`
@@ -25,7 +24,7 @@
 生成内容：
 - `feature/<name>/<Name>ViewModel.kt` —— `@HiltViewModel internal class <Name>ViewModel @Inject constructor(navigator: AppNavigator, userState: UserState) : BaseViewModel(navigator, userState)`
 - `feature/<name>/<Name>Screen.kt` —— `@Composable internal fun <Name>Screen(...) { DSAppScaffold(...) }`（DS 组件，禁止 M3 原生）
-- `app/src/test/.../feature/<name>/<Name>ViewModelTest.kt` —— MockK + MainDispatcherRule 骨架
+- `app/src/test/.../feature/<name>/<Name>ViewModelTest.kt` —— MainDispatcherRule 骨架
 - 自动编辑 `AppRoutes.kt`（追加 `@Serializable data object <Name>Route : AppRoute`）
 - 自动编辑 `NavExtensions.kt`（追加 `internal fun AppNavigator.goto<Name>() = navigate(<Name>Route)`）
 - 自动编辑 `MainActivity.kt`（在 `AppNavGraph` 内追加 `composable<<Name>Route> { <Name>Screen(...) }`）
@@ -44,7 +43,6 @@
 生成内容：
 - `core/designsystem/<domain>/<DSName>.kt` —— `@Composable internal fun <DSName>(...)`（M3 substrate + DSTokens，对外不暴露 M3 类型）
 - 3 个 `@Preview`：Light / Dark / AMOLED，均包裹在 `DSDesignTheme` 内
-- `app/src/test/.../<DSName>ScreenshotTest.kt` —— Paparazzi 占位骨架（`@Ignore`，待 P0-2 启用）
 - 提示手动追加 `docs/rules/07-ui-components.md` 映射表行
 
 ### 3. `scripts/new-repository.sh <name> [--dry-run] [--force]`
@@ -63,7 +61,6 @@
 - `core/domain/model/<Name>Item.kt` —— `data class <Name>Item`（**KMP-ready 纯 Kotlin**，无 Android import）
 - `core/domain/<Name>Repository.kt` —— `interface <Name>Repository`（KMP-ready，仅 import `ApiResult` + `<Name>Item` + `Flow`）
 - `core/data/<Name>RepositoryImpl.kt` —— `@Singleton class <Name>RepositoryImpl @Inject constructor(api, dao) : <Name>Repository`（`safeApiCall` 包装 + Entity→Item 映射；`syncToCache` 保留为 Impl 具体方法）
-- `app/src/test/.../core/data/<Name>RepositoryTest.kt` —— MockK 骨架，构造 Impl、断言接口
 - 自动编辑 `AppDatabase.kt`（entities 数组追加 + version+1 + abstract dao + imports）
 - 自动编辑 `DatabaseModule.kt`（追加 `@Provides fun provide<Name>Dao`）
 - 自动编辑 `AppApi.kt`（追加 `@GET suspend fun get<Name>s(): List<<Name>Dto>`）

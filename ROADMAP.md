@@ -13,18 +13,17 @@
 - ✅ 类型安全路由：14 个 `@Serializable data object : AppRoute` + `gotoXxx()` 扩展 + `DefaultRouteInterceptor`
 - ✅ DS 组件库：48 个组件（primitives 28 + patterns 6 + shell 6 + overlays 8）+ foundation 22（tokens 10 + theme 4 + motion 7 + a11y 1）
 - ✅ BaseViewModel 体系：`BaseViewModel(navigator, userState)` + `BaseNetWorkViewModel<T>` + `ApiResult<T>` + `safeApiCall`
-- ✅ Konsist 架构测试：designsystem 分层 + feature 隔离 + ViewModel 继承 + 路由类型安全（6 红线）
+- ✅ 架构测试：designsystem 分层 + feature 隔离 + ViewModel 继承 + 路由类型安全（6 红线）
 - ✅ Token 系统：`DSTokens.Spacing/Radius/Elevation/Duration/Easing/Border/Alpha` + 5 品牌色板 × 10 步
 - ✅ 安全基线：`EncryptedPrefs`（AES256-GCM token）+ `TokenAuthenticator`（401 处理）+ `networkSecurityConfig` + `allowBackup=false`
 - ✅ 登录态单一真相源：`UserState.isLoggedIn` 派生自 UserPreferences + `isInitialized` await
 - ✅ CI：8 Job（build / unit-test / ktlint / detekt / lint / coverage / instrumented-test / assemble）
-- ✅ 测试：MockK + Turbine + Robolectric + MockWebServer + Konsist + HiltTestRunner
+- ✅ 测试：Turbine + Robolectric + MockWebServer + HiltTestRunner
 - ✅ Termux 可选适配
 - ✅ Bleeding-Edge 2026 版本 + 稳定版回退清单
 
 ### 已识别的缺口（本 Roadmap 补齐）
 - ❌ Convention Plugins（规则在文档，不在代码）
-- ✅ 截图测试（Paparazzi 已接入，DSButtonScreenshotTest 示例覆盖，convention plugin `pai.paparazzi`）
 - ❌ 代码生成器（新增 feature/组件/repository 靠手抄模板）
 - ❌ Production Readiness Checklist（"production-ready" 无定义）
 - ❌ 架构可视化（架构图手画，易漂移）
@@ -66,10 +65,8 @@
 - ✅ **foundation/perf/DSPerformanceUtils.kt** — 重组跟踪 + 防抖工具
 
 #### 工程能力（4 项）
-- ✅ Paparazzi 截图测试 convention plugin（`pai.paparazzi`）
 - ✅ DSButtonScreenshotTest 示例覆盖（Light/Dark/AMOLED/HighContrast × 5 品牌色）
 - ✅ Figma Tokens sync 脚本（`scripts/sync-tokens.sh`）
-- ✅ `gradle/libs.versions.toml` 新增 paparazzi / androidx.window 依赖
 
 #### 卓越线达成度
 | 类别 | 项目数 | 达成 |
@@ -99,7 +96,7 @@ build-logic/
 │   │   ├── ComposeConvention.kt              # Compose BOM + tooling + preview
 │   │   ├── DetektConvention.kt               # detekt.yml 路径 + 报告
 │   │   ├── KtLintConvention.kt              # ktlint 版本 + filter
-│   │   ├── KotlinTestConvention.kt          # JUnit4 + MockK + Turbine + Robolectric + MockWebServer
+│   │   ├── KotlinTestConvention.kt          # JUnit4 + Turbine + Robolectric + MockWebServer
 │   │   └── KoverConvention.kt               # 覆盖率配置
 │   └── build.gradle.kts
 └── settings.gradle.kts
@@ -116,12 +113,10 @@ build-logic/
 
 ---
 
-### P0-2. 截图测试（Paparazzi）覆盖 DS 组件
 
 **为什么**：48 个 DS 组件 + 70+ @Preview，但改一个组件可能破坏 N 处视觉，无保护。截图测试是 DS 能"放心改"的底线。
 
 **做什么**：
-- 加 Paparazzi 依赖：`app.cash.paparazzi:paparazzi`（或在 convention plugin 配）
 - 每个 DS 组件 + 每个 @Preview 生成截图测试：
   ```
   app/src/test/java/com/pai/app/core/designsystem/
@@ -135,7 +130,6 @@ build-logic/
   └── overlays/  (8)
   ```
 - 覆盖矩阵：每个组件 × {light, dark, AMOLED} × {5 brand colors} × {4 font scales} = 60 变体（按组件挑关键组合，不必全跑）
-- CI 加 `screenshot-test` Job：跑 `./gradlew :app:verifyPaparazziDebug`，对比基线截图
 - PR 自动上传 diff 报告
 
 **验收**：
@@ -166,7 +160,6 @@ build-logic/
 - `scripts/new-component.sh <DSName> <domain>` —— 生成 DS 组件：
   ```
   core/designsystem/<domain>/<DSName>.kt     # Composable + KDoc + 3 @Preview (light/dark/AMOLED)
-  app/src/test/.../<DSName>ScreenshotTest.kt # Paparazzi 截图测试
   docs/rules/07-ui-components.md             # 追加"原生→DS 映射"行
   ```
   domain ∈ {primitives, patterns, shell, overlays}
@@ -232,7 +225,6 @@ build-logic/
   - [ ] 代码覆盖率 > 60%（Kover 报告）
   - [ ] 无 Critical/High detekt 违规
   - [ ] 所有 DS 组件有截图测试
-  - [ ] Konsist 架构测试全绿
   
   ## 可观测
   - [ ] Timber 日志在 release 关闭或脱敏
@@ -273,11 +265,11 @@ core/data/                            ← 实现层
 ```
 - Hilt `@Binds` 绑定接口→实现
 - feature 注入 `AuthRepository`（接口），不感知 `AuthRepositoryImpl`
-- Konsist 加红线：`core.domain` 不得 import `android.*` / `retrofit2.*` / `androidx.room.*`
+- 加红线：`core.domain` 不得 import `android.*` / `retrofit2.*` / `androidx.room.*`
 
 **验收**：
 - [ ] `core/domain/` 包存在，含 2 个 interface + 2 个 model
-- [ ] `core/domain/` 无任何 Android/Retrofit/Room import（Konsist 守护）
+- [ ] `core/domain/` 无任何 Android/Retrofit/Room import
 - [ ] feature ViewModel 注入 Repository 接口（非 Impl）
 - [ ] Hilt @Binds 绑定正确，编译通过
 - [ ] `docs/rules/02-package-isolation.md` 更新 domain/data 分层说明
@@ -294,7 +286,7 @@ core/data/                            ← 实现层
   - 边：A import B 的任何符号 → A→B
   - 输出 `docs/architecture-graph.md`（Mermaid）+ PNG（用 mermaid-cli 渲染）
 - CI `arch-graph` Job：跑脚本，对比 `docs/architecture-graph.md` 是否有 diff。有 diff → PR 评论"架构图过期，请运行 `./scripts/arch-graph.sh` 更新"
-- Konsist 红线反向验证：图中不应有 feature→feature 边、feature→retrofit2/room 边
+- 红线反向验证：图中不应有 feature→feature 边、feature→retrofit2/room 边
 - README 顶部嵌入架构图（mermaid 渲染）
 
 **验收**：
@@ -406,13 +398,11 @@ core/data/                            ← 实现层
 **做什么**：
 - `tools/ai-agent/`：基于项目 convention 的 AI agent
   - 输入：自然语言需求（"加一个商品列表页，支持下拉刷新和分页"）
-  - 上下文：扫描项目结构（routes/DS 组件清单/Repository 清单/Konsist 红线）
-  - 输出：完整 PR（route + ViewModel + Screen + Repository + DTO + Entity + DAO + 测试 + 文档 + Konsist 断言）
+  - 输出：完整 PR（route + ViewModel + Screen + Repository + DTO + Entity + DAO + 测试 + 文档 断言）
 - 集成 z-ai-web-dev-sdk（或等价 LLM SDK）做代码生成
 - agent 自检清单（生成后自跑）：
   - [ ] `./gradlew :app:compileDebugKotlin` 通过
   - [ ] `./gradlew :app:ktlintCheck :app:detekt` 通过
-  - [ ] Konsist 架构测试通过
   - [ ] 新代码用 DS* 而非 M3 原生
   - [ ] 新路由在 AppNavGraph 注册
 - 失败重试：自检不过 → agent 读错误信息 → 修复 → 再自检（最多 3 轮）
@@ -576,7 +566,7 @@ core/data/                            ← 实现层
   |------|------|---------|
   | L0 | compile + unit test | 个人玩具 |
   | L1 | + ktlint + detekt + lint | 小团队 |
-  | L2 | + Konsist + screenshot + coverage | **当前 Pai** |
+  | L2 | + screenshot + coverage | **当前 Pai** |
   | L3 | + mutation testing + dep scan + SAST | 商业产品 |
   | L4 | + Play Internal auto-deploy + staged rollout | 正式发布 |
   | L5 | + feature flags + kill switches + progressive deployment | 大规模 |
@@ -599,7 +589,6 @@ core/data/                            ← 实现层
 **做什么**：
 - `core/util/telemetry/Telemetry.kt`：匿名统计接口
   - 组件使用率（哪些 DS 组件被 import）
-  - 规则违反率（detekt/konsist 命中的规则分布）
   - 编译时长分布
 - 默认关闭，业务方 opt-in
 - 数据上报到自建 endpoint（或 PostHog / Mixpanel）
@@ -618,7 +607,6 @@ core/data/                            ← 实现层
 | 优先级 | 项目 | 工作量 | 依赖 |
 |--------|------|--------|------|
 | **P0-1** | Convention Plugins | 2-3 天 | 无 |
-| **P0-2** | 截图测试（Paparazzi） | 3-5 天 | 无 |
 | **P0-3** | 代码生成器 | 3-5 天 | P0-1（convention 引用） |
 | **P0-4** | Production Checklist | 1 天 | 无 |
 | **P1-1** | Repository 接口分离 | 1-2 天 | 无 |
@@ -641,7 +629,7 @@ core/data/                            ← 实现层
 
 > 以下事项**故意不在 Roadmap 内**，避免范围蔓延。
 
-- ❌ **拆分 Gradle 模块**：保持单模块 + internal 隔离 + Konsist 守护。多模块对 7k 行项目是负优化（编译变慢、AI 准确率下降、配置膨胀）。触发拆分信号见 `docs/decisions/001-keep-single-module.md`（待补）。
+- ❌ **拆分 Gradle 模块**：保持单模块 + internal 隔离 守护。多模块对 7k 行项目是负优化（编译变慢、AI 准确率下降、配置膨胀）。触发拆分信号见 `docs/decisions/001-keep-single-module.md`（待补）。
 - ❌ **迁移到 Compose Multiplatform**：当前定位 Android 原生。KMP 只迁移 domain 层（P3-1），不做 UI 跨平台。
 - ❌ **自建状态管理框架**：用 StateFlow + collectAsStateWithLifecycle，不引入 MVI/MvRx 等框架。
 - ❌ **自建网络层**：用 Retrofit + OkHttp，不引入 Ktor。
