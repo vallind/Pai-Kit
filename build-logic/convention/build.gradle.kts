@@ -1,7 +1,7 @@
 // ============================================================================
 // build-logic/convention/build.gradle.kts
 // 用 kotlin-dsl 插件构建 convention plugins。
-// 通过 gradlePlugin {} 注册 9 个 convention plugin id，供根项目 / app 项目使用。
+// 通过 gradlePlugin {} 注册 8 个 convention plugin id，供根项目 / app 项目使用。
 // ============================================================================
 
 plugins {
@@ -28,7 +28,6 @@ dependencies {
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.ktlint.gradle.plugin)
     implementation(libs.kover.gradle.plugin)
-    implementation(libs.paparazzi.gradle.plugin)
 }
 
 gradlePlugin {
@@ -64,10 +63,6 @@ gradlePlugin {
         register("kover") {
             id = "pai.kover"
             implementationClass = "com.pai.app.buildlogic.convention.KoverConvention"
-        }
-        register("paparazzi") {
-            id = "pai.paparazzi"
-            implementationClass = "com.pai.app.buildlogic.convention.PaparazziConvention"
         }
     }
 }

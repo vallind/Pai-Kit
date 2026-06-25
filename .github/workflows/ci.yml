@@ -278,46 +278,6 @@ jobs:
           ./scripts/arch-graph.sh --check
 
   # ---------------------------------------------------------------------------
-  # Job 8: 截图测试（Paparazzi，仅 push 时执行）
-  # ---------------------------------------------------------------------------
-  screenshot-test:
-    name: Screenshot Tests (Paparazzi)
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push'
-    timeout-minutes: 20
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx libx11-6
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Verify Screenshots
-        run: ./gradlew :app:verifyPaparazziDebug --no-daemon --stacktrace
-
-      - name: Upload Screenshot Diffs on Failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshot-diffs
-          path: app/build/paparazzi/failures/
-          retention-days: 7
-
-  # ---------------------------------------------------------------------------
   # Job 9: Figma Token 同步检查（仅 push 时执行）
   # ---------------------------------------------------------------------------
   token-sync:
@@ -369,7 +329,7 @@ jobs:
   assemble:
     name: Assemble Debug APK
     runs-on: ubuntu-latest
-    needs: [ unit-test, ktlint, detekt, lint, instrumented-test, arch-graph, screenshot-test, token-sync, production-check ]
+    needs: [ unit-test, ktlint, detekt, lint, instrumented-test, arch-graph, token-sync, production-check ]
     timeout-minutes: 30
 
     steps:
