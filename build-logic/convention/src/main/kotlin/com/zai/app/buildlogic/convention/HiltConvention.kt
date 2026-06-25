@@ -1,4 +1,4 @@
-package com.zai.app.buildlogic.convention
+package com.pai.app.buildlogic.convention
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

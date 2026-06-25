@@ -8,7 +8,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.zai.app.buildlogic"
+group = "com.pai.app.buildlogic"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -35,39 +35,39 @@ gradlePlugin {
     plugins {
         register("androidApplication") {
             id = "pai.android.application"
-            implementationClass = "com.zai.app.buildlogic.convention.AndroidApplicationConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.AndroidApplicationConvention"
         }
         register("androidLibrary") {
             id = "pai.android.library"
-            implementationClass = "com.zai.app.buildlogic.convention.AndroidLibraryConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.AndroidLibraryConvention"
         }
         register("hilt") {
             id = "pai.hilt"
-            implementationClass = "com.zai.app.buildlogic.convention.HiltConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.HiltConvention"
         }
         register("compose") {
             id = "pai.compose"
-            implementationClass = "com.zai.app.buildlogic.convention.ComposeConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.ComposeConvention"
         }
         register("detekt") {
             id = "pai.detekt"
-            implementationClass = "com.zai.app.buildlogic.convention.DetektConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.DetektConvention"
         }
         register("ktlint") {
             id = "pai.ktlint"
-            implementationClass = "com.zai.app.buildlogic.convention.KtLintConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.KtLintConvention"
         }
         register("kotlinTest") {
             id = "pai.kotlin.test"
-            implementationClass = "com.zai.app.buildlogic.convention.KotlinTestConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.KotlinTestConvention"
         }
         register("kover") {
             id = "pai.kover"
-            implementationClass = "com.zai.app.buildlogic.convention.KoverConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.KoverConvention"
         }
         register("paparazzi") {
             id = "pai.paparazzi"
-            implementationClass = "com.zai.app.buildlogic.convention.PaparazziConvention"
+            implementationClass = "com.pai.app.buildlogic.convention.PaparazziConvention"
         }
     }
 }

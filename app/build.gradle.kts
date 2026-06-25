@@ -7,7 +7,6 @@ plugins {
     id("pai.ktlint")
     id("pai.kotlin.test")
     id("pai.kover")
-    id("pai.paparazzi")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
 }
@@ -46,7 +45,4 @@ dependencies {
     // M3 卓越线补齐：WindowSizeClass（响应式布局） + 共享元素转场（已在 BOM）
     implementation(libs.androidx.window)
     implementation(libs.androidx.window.core)
-
-    // M3 卓越线补齐：Paparazzi 截图测试
-    testImplementation(libs.paparazzi)
 }

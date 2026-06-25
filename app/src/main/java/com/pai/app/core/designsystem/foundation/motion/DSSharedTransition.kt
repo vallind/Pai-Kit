@@ -170,8 +170,7 @@ val DSDefaultContentScale: ContentScale = ContentScale.Crop
 fun Modifier.dsSharedElement(
     key: String,
     sharedScope: SharedTransitionScope?,
-    animatedVisibilityScope: AnimatedVisibilityScope?,
-    modifier: Modifier = Modifier
+    animatedVisibilityScope: AnimatedVisibilityScope?
 ): Modifier {
     if (sharedScope == null || animatedVisibilityScope == null) {
         // Debug 警告：调用方未包裹 DSSharedTransitionProvider
@@ -180,10 +179,10 @@ fun Modifier.dsSharedElement(
             "dsSharedElement(key=$key) called outside DSSharedTransitionProvider — no-op. " +
                 "Wrap your NavHost with DSSharedTransitionProvider { ... }."
         )
-        return modifier
+        return this
     }
     return with(sharedScope) {
-        modifier.sharedElement(
+        this@dsSharedElement.sharedElement(
             sharedContentState = rememberSharedContentState(key = key),
             animatedVisibilityScope = animatedVisibilityScope,
             boundsTransform = DSDefaultBoundsTransform
@@ -202,18 +201,17 @@ fun Modifier.dsSharedElement(
 fun Modifier.dsSharedBounds(
     key: String,
     sharedScope: SharedTransitionScope?,
-    animatedVisibilityScope: AnimatedVisibilityScope?,
-    modifier: Modifier = Modifier
+    animatedVisibilityScope: AnimatedVisibilityScope?
 ): Modifier {
     if (sharedScope == null || animatedVisibilityScope == null) {
         Timber.tag("DS-Motion").w(
             "dsSharedBounds(key=$key) called outside DSSharedTransitionProvider — no-op. " +
                 "Wrap your NavHost with DSSharedTransitionProvider { ... }."
         )
-        return modifier
+        return this
     }
     return with(sharedScope) {
-        modifier.sharedBounds(
+        this@dsSharedBounds.sharedBounds(
             sharedContentState = rememberSharedContentState(key = key),
             animatedVisibilityScope = animatedVisibilityScope,
             boundsTransform = DSDefaultBoundsTransform,

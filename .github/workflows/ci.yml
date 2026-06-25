@@ -132,7 +132,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ktlint-report
-          path: app/build/reports/ktlint/
+          path: app/build/reports/ktlint/**/
+          path: app/build/output/ktlint/
           retention-days: 7
 
   # ---------------------------------------------------------------------------

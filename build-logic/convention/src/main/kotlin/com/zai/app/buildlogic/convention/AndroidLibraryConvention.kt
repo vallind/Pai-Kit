@@ -1,4 +1,4 @@
-package com.zai.app.buildlogic.convention
+package com.pai.app.buildlogic.convention
 
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion

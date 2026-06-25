@@ -1,4 +1,4 @@
-package com.zai.app.buildlogic.convention
+package com.pai.app.buildlogic.convention
 
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.JavaVersion
@@ -33,16 +33,16 @@ class AndroidApplicationConvention : Plugin<Project> {
             }
 
             extensions.configure<ApplicationExtension> {
-                namespace = "com.zai.app"
+                namespace = "com.pai.app"
                 compileSdk = 36
 
                 defaultConfig {
-                    applicationId = "com.zai.app"
+                    applicationId = "com.pai.app"
                     minSdk = 24
                     targetSdk = 36
                     versionCode = 1
                     versionName = "1.0.0"
-                    testInstrumentationRunner = "com.zai.app.HiltTestRunner"
+                    testInstrumentationRunner = "com.pai.app.HiltTestRunner"
                 }
 
                 buildTypes {

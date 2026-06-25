@@ -1,4 +1,4 @@
-package com.zai.app.buildlogic.convention
+package com.pai.app.buildlogic.convention
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -10,8 +10,8 @@ import org.gradle.kotlin.dsl.getByType
  * Convention plugin for Kotlin / Android 测试依赖。
  *
  * 单元测试 (testImplementation)：
- *  - JUnit4 / MockK / Turbine / kotlinx-coroutines-test
- *  - OkHttp MockWebServer / Robolectric / Konsist
+ *  - JUnit4 / Turbine / kotlinx-coroutines-test
+ *  - OkHttp MockWebServer / Robolectric
  *  - AndroidX Test Core（Robolectric 中 ApplicationProvider 用）
  *
  * Instrumented 测试 (androidTestImplementation)：
@@ -38,19 +38,16 @@ class KotlinTestConvention : Plugin<Project> {
             dependencies {
                 // --- Unit test (testImplementation) ---
                 add("testImplementation", libs.findLibrary("junit").get())
-                add("testImplementation", libs.findLibrary("mockk").get())
                 add("testImplementation", libs.findLibrary("turbine").get())
                 add("testImplementation", libs.findLibrary("kotlinx.coroutines.test").get())
                 add("testImplementation", libs.findLibrary("okhttp.mockwebserver").get())
                 add("testImplementation", libs.findLibrary("robolectric").get())
-                add("testImplementation", libs.findLibrary("konsist.test").get())
                 // Robolectric 单元测试中获取 Application Context 所需（ApplicationProvider）
                 add("testImplementation", libs.findLibrary("androidx.test.core").get())
 
                 // --- Instrumented test (androidTestImplementation) ---
                 add("androidTestImplementation", libs.findLibrary("androidx.junit").get())
                 add("androidTestImplementation", libs.findLibrary("androidx.espresso.core").get())
-                add("androidTestImplementation", libs.findLibrary("mockk.android").get())
                 add("androidTestImplementation", libs.findLibrary("turbine").get())
                 add("androidTestImplementation", libs.findLibrary("kotlinx.coroutines.test").get())
                 add("androidTestImplementation", libs.findLibrary("room.testing").get())

@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -92,8 +93,9 @@ internal fun DSDatePicker(
     // 通过覆盖 LocalContext 注入简体中文配置（LocalConfiguration 由 LocalContext 派生，
     // 无需重复 provide — Low #24 修复）。
     val context = LocalContext.current
-    val localizedContext = remember(context) {
-        val chineseConfig = Configuration(context.resources.configuration).apply {
+    val configuration = LocalConfiguration.current
+    val localizedContext = remember(context, configuration) {
+        val chineseConfig = Configuration(configuration).apply {
             setLocale(Locale.SIMPLIFIED_CHINESE)
         }
         context.createConfigurationContext(chineseConfig)

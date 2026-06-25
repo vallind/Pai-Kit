@@ -208,7 +208,8 @@ internal fun AppNavGraph(
     userState: UserState,
 ) {
     // 决策 6：startDestination 基于已就绪的 isLoggedIn 计算（外层已 await isInitialized）
-    val startDestination: AppRoute = if (userState.isLoggedIn.value) HomeRoute else AuthRoute
+    val isLoggedIn by userState.isLoggedIn.collectAsStateWithLifecycle()
+    val startDestination: AppRoute = if (isLoggedIn) HomeRoute else AuthRoute
 
     // 决策 2：订阅全局事件 —— 仅 TokenExpired / GlobalError 两个分支
     val context = LocalContext.current

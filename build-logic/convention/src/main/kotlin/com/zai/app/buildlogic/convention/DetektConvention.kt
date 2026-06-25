@@ -1,4 +1,4 @@
-package com.zai.app.buildlogic.convention
+package com.pai.app.buildlogic.convention
 
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension

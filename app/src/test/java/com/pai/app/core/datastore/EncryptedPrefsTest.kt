@@ -8,11 +8,13 @@ package com.pai.app.core.datastore
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import java.security.Security
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -42,6 +44,13 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33])
 class EncryptedPrefsTest {
+
+    companion object {
+        @BeforeClass @JvmStatic
+        fun initSecurity() {
+            Security.insertProviderAt(org.conscrypt.Conscrypt.newProvider(), 1)
+        }
+    }
 
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val prefs = EncryptedPrefs(context)
