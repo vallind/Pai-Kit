@@ -1,9 +1,7 @@
 # ============================================================================
-# CI - 持续集成工作流（最终整合版 + 权限修复）
+# CI - 持续集成工作流（移除 Paparazzi/MockK/Konsist 相关 CI 步骤）
 # 触发：push 到 main/master/develop + Pull Request
-# 策略：PR 只跑快速检查，重型任务（仪器测试、截图、Token 同步）仅 push 时执行
-# 优化：单元测试与覆盖率合并，避免重复执行
-# 修复：所有 Job 显式修复 gradlew 可执行权限
+# 策略：PR 只跑快速检查 + 打包；重型任务（仪器测试、Token 同步）仅 push 时执行
 # ============================================================================
 
 name: CI
@@ -19,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  JAVA_VERSION: '17'
+  JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'temurin'
 
 jobs:
@@ -47,7 +45,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+          cache-read-only: ${{ ! contains(fromJSON('["main","master"]'), github.ref_name) }}
 
       - name: Compile Debug
         run: ./gradlew :app:compileDebugKotlin --no-daemon --stacktrace
@@ -89,7 +87,7 @@ jobs:
         with:
           name: unit-test-report
           path: app/build/reports/tests/testDebugUnitTest/
-          retention-days: 7
+          retention-days: 3
 
       - name: Upload Coverage Report
         if: always()
@@ -97,86 +95,13 @@ jobs:
         with:
           name: kover-coverage-report
           path: app/build/reports/kover/
-          retention-days: 14
-
-  # ---------------------------------------------------------------------------
-  # Job 3: 代码质量 - ktlint
-  # ---------------------------------------------------------------------------
-  ktlint:
-    name: KtLint Check
-    runs-on: ubuntu-latest
-    needs: build
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Run KtLint
-        run: ./gradlew :app:ktlintCheck --no-daemon --stacktrace
-
-      - name: Upload KtLint Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ktlint-report
-          path: app/build/reports/ktlint/**/
-          path: app/build/output/ktlint/
           retention-days: 7
 
   # ---------------------------------------------------------------------------
-  # Job 4: 代码质量 - detekt
+  # Job 3: 代码质量 - ktlint + detekt + Android Lint 合并
   # ---------------------------------------------------------------------------
-  detekt:
-    name: Detekt Check
-    runs-on: ubuntu-latest
-    needs: build
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Run Detekt
-        run: ./gradlew :app:detekt --no-daemon --stacktrace
-
-      - name: Upload Detekt Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: detekt-report
-          path: app/build/reports/detekt/
-          retention-days: 7
-
-  # ---------------------------------------------------------------------------
-  # Job 5: Android Lint
-  # ---------------------------------------------------------------------------
-  lint:
-    name: Android Lint
+  code-quality:
+    name: Code Quality (ktlint, detekt, lint)
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 20
@@ -197,19 +122,65 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run Lint
+      - name: Run ktlint
+        run: ./gradlew :app:ktlintCheck --no-daemon --stacktrace
+
+      - name: Run detekt
+        run: ./gradlew :app:detekt --no-daemon --stacktrace
+
+      - name: Run Android Lint
         run: ./gradlew :app:lintDebug --no-daemon --stacktrace
 
-      - name: Upload Lint Report
+      - name: Upload ktlint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-report
+          path: |
+            app/build/reports/ktlint/**/
+            app/build/output/ktlint/
+          retention-days: 7
+
+      - name: Upload detekt report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: app/build/reports/detekt/
+          retention-days: 3
+
+      - name: Upload lint report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lint-report
           path: app/build/reports/lint-results-*.html
-          retention-days: 7
+          retention-days: 3
 
   # ---------------------------------------------------------------------------
-  # Job 6: 仪器化测试（仅 push 时执行）
+  # Job 4: 脚本检查（架构图 + 生产就绪）合并
+  # ---------------------------------------------------------------------------
+  scripts-check:
+    name: Script Checks (Architecture & Production)
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Run architecture and production checks
+        run: |
+          chmod +x scripts/arch-graph.sh scripts/check-production.sh
+          ./scripts/arch-graph.sh --check
+          ./scripts/check-production.sh
+
+  # ---------------------------------------------------------------------------
+  # Job 5: 仪器化测试（仅 push 时执行）
   # ---------------------------------------------------------------------------
   instrumented-test:
     name: Instrumented Tests
@@ -254,31 +225,10 @@ jobs:
         with:
           name: instrumented-test-report
           path: app/build/reports/androidTest/connected/
-          retention-days: 7
+          retention-days: 3
 
   # ---------------------------------------------------------------------------
-  # Job 7: 架构图检查
-  # ---------------------------------------------------------------------------
-  arch-graph:
-    name: Architecture Graph Check
-    runs-on: ubuntu-latest
-    needs: build
-    timeout-minutes: 5
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install ripgrep
-        run: sudo apt-get update && sudo apt-get install -y ripgrep
-
-      - name: Verify architecture graph is up-to-date
-        run: |
-          chmod +x scripts/arch-graph.sh
-          ./scripts/arch-graph.sh --check
-
-  # ---------------------------------------------------------------------------
-  # Job 9: Figma Token 同步检查（仅 push 时执行）
+  # Job 6: Figma Token 同步检查（仅 push 时执行）
   # ---------------------------------------------------------------------------
   token-sync:
     name: Figma Token Sync Check
@@ -306,30 +256,13 @@ jobs:
           ./scripts/sync-tokens.sh --check
 
   # ---------------------------------------------------------------------------
-  # Job 10: 生产就绪检查
-  # ---------------------------------------------------------------------------
-  production-check:
-    name: Production Readiness Check
-    runs-on: ubuntu-latest
-    needs: build
-    timeout-minutes: 5
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run production readiness check
-        run: |
-          chmod +x scripts/check-production.sh
-          ./scripts/check-production.sh
-
-  # ---------------------------------------------------------------------------
-  # Job 11: 构建 APK（验证打包流程）
+  # Job 7: 构建 APK（PR 和 push 均执行）
   # ---------------------------------------------------------------------------
   assemble:
     name: Assemble Debug APK
     runs-on: ubuntu-latest
-    needs: [ unit-test, ktlint, detekt, lint, instrumented-test, arch-graph, token-sync, production-check ]
+    needs: [ unit-test, code-quality, scripts-check, instrumented-test, token-sync ]
+    # 注：screenshot-test 已被移除，故不再依赖
     timeout-minutes: 30
 
     steps:
