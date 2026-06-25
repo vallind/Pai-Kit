@@ -170,6 +170,41 @@ class AuthScreenTest {
 
 `app/build.gradle.kts` 中 `testInstrumentationRunner = "com.pai.app.HiltTestRunner"`（已配置）。
 
+### 2.6 InMemoryEncryptedPrefs（KeyStore 无关的测试替身）
+
+`EncryptedPrefs` 是接口，生产实现 `EncryptedPrefsImpl` 依赖 Android KeyStore（`EncryptedSharedPreferences`）。单元测试中应使用 `InMemoryEncryptedPrefs` 避免 Robolectric 依赖：
+
+```kotlin
+// app/src/test/.../core/network/HeaderInterceptorTest.kt
+import com.pai.app.core.datastore.InMemoryEncryptedPrefs
+
+class HeaderInterceptorTest {
+    private val encryptedPrefs = InMemoryEncryptedPrefs()
+
+    @Test
+    fun `登录后 Authorization 头注入`() = runTest {
+        encryptedPrefs.saveToken("my-token")
+        // 构造 interceptor 并断言 header
+    }
+}
+```
+
+Hilt UI 测试中替换：
+```kotlin
+@UninstallModules(EncryptedPrefsModule::class)
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [EncryptedPrefsModule::class],
+)
+@Module
+object TestEncryptedPrefsModule {
+    @Provides @Singleton
+    fun provideEncryptedPrefs(): EncryptedPrefs = InMemoryEncryptedPrefs()
+}
+```
+
+注意：`InMemoryEncryptedPrefs` token 仅存于内存，适合 ViewModel / Interceptor / Authenticator 单元测试；跨进程持久化测试请用 `EncryptedPrefsImpl` + Robolectric。
+
 ---
 
 ## 三、测试命名规范

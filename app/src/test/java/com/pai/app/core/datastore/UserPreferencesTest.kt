@@ -43,7 +43,7 @@ import org.robolectric.annotation.Config
 class UserPreferencesTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
-    private val encryptedPrefs = EncryptedPrefs(context)
+    private val encryptedPrefs = EncryptedPrefsImpl(context)
     private val preferences = UserPreferences(context, encryptedPrefs)
 
     @Before

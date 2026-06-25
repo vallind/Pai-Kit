@@ -16,6 +16,7 @@ graph TD
     core_data[core/data]
     core_database[core/database]
     core_datastore[core/datastore]
+    core_designsystem_containers[core/designsystem/containers]
     core_designsystem_foundation[core/designsystem/foundation]
     core_designsystem_overlays[core/designsystem/overlays]
     core_designsystem_patterns[core/designsystem/patterns]
@@ -49,13 +50,16 @@ graph TD
     core_data --> core_database
     core_data --> core_domain
     core_data --> core_network
+    core_designsystem_containers --> core_designsystem_foundation
+    core_designsystem_containers --> core_designsystem_primitives
     core_designsystem_overlays --> core_designsystem_foundation
     core_designsystem_overlays --> core_designsystem_primitives
+    core_designsystem_overlays --> core_designsystem_shell
     core_designsystem_patterns --> core_designsystem_foundation
     core_designsystem_patterns --> core_designsystem_primitives
     core_designsystem_primitives --> core_designsystem_foundation
     core_designsystem_shell --> core_designsystem_foundation
-    core_designsystem_shell --> core_designsystem_patterns
+    core_designsystem_shell --> core_designsystem_overlays
     core_domain --> core_base
     core_network --> app
     core_network --> core_base
@@ -99,6 +103,6 @@ graph TD
 
 ## 统计
 
-- 节点数: 20
-- 边数: 63
-- 生成时间: 2026-06-21 23:59:31 UTC
+- 节点数: 21
+- 边数: 66
+- 生成时间: 2026-06-25 08:38:17 UTC

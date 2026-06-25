@@ -1,6 +1,6 @@
 // ============================================================================
 // EncryptedPrefsTest.kt
-// EncryptedPrefs 单元测试（Robolectric）：AES256-GCM 加密 token 持久化
+// EncryptedPrefsImpl 单元测试（Robolectric）：AES256-GCM 加密 token 持久化
 // 决策 4：token 安全存储
 // ============================================================================
 
@@ -20,7 +20,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * [EncryptedPrefs] 单元测试（Robolectric）
+ * [EncryptedPrefsImpl] 单元测试（Robolectric）
  *
  * 决策 4：用 EncryptedSharedPreferences（AES256-GCM）持久化 Bearer token，
  * 替代旧 UserPreferences.token 明文存储（High #6）。
@@ -39,13 +39,15 @@ import org.robolectric.annotation.Config
  * 说明：
  * - 使用 [runBlocking] 等待加密盘读写完成
  * - 每个用例前 clearToken，避免用例间状态污染
+ * - 直接测试 [EncryptedPrefsImpl]（生产实现），[InMemoryEncryptedPrefs] 的测试见
+ *   [InMemoryEncryptedPrefsTest]
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33])
 class EncryptedPrefsTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
-    private val prefs = EncryptedPrefs(context)
+    private val prefs = EncryptedPrefsImpl(context)
 
     @Before
     fun setup() {
@@ -97,8 +99,8 @@ class EncryptedPrefsTest {
         // 先写入
         prefs.saveToken("persisted")
 
-        // 新建 EncryptedPrefs 实例模拟"应用重启"后从加密盘恢复
-        val restartedPrefs = EncryptedPrefs(context)
+        // 新建 EncryptedPrefsImpl 实例模拟"应用重启"后从加密盘恢复
+        val restartedPrefs = EncryptedPrefsImpl(context)
         assertEquals("persisted", restartedPrefs.observeToken().first())
     }
 }
