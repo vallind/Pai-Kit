@@ -5,7 +5,7 @@
 
 ## [Unreleased]
 
-## [1.3.0] - 2026-06-25
+## [0.0.4] - 2026-06-25
 
 ### Removed
 - 移除 Paparazzi：`PaparazziConvention.kt`、截图测试、CI Job、libs.versions.toml 条目
@@ -17,7 +17,7 @@
 ### Fixed
 - 修复 4 个 Lint Error：`LocalContextConfigurationRead`、`ModifierFactoryUnreferencedReceiver`、`StateFlowValueCalledInComposition`
 
-## [1.2.0] - 2026-06-25
+## [0.0.3] - 2026-06-25
 
 ### Fixed
 - 编译修复：Kotlin 2.3.21 trailing lambda 行为变更 — `DSContextMenuItem` / `DSTopBarAction` 参数重排序
@@ -40,7 +40,7 @@
 - 优化性能诊断工具 `DSPerformanceUtils` 不兼容 Compose 1.9 API 的引用
 - 移除 `RangeSliderDefaults` 和 `ElevatedButtonDefaults` 等已废弃 M3 API 引用
 
-## [1.1.0] - 2026-06-22
+## [0.0.2] - 2026-06-22
 
 ### Added
 - 新增 `EncryptedPrefs`：基于 EncryptedSharedPreferences（AES256-GCM）安全存储 token
@@ -60,7 +60,7 @@
 - 删除 `NavigationResultKey.kt`、`popBackStackWithResult`、`resultEvents`
 - 删除 `Fakes.kt`（测试辅助类）
 
-## [1.0.0] - 2026-06-22
+## [0.0.1] - 2026-06-22
 
 ### Added
 - Pai Scaffold Android 脚手架初始化
