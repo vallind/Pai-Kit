@@ -1,7 +1,9 @@
 # ============================================================================
-# CI - 持续集成工作流
-# 触发：push 到 main/master + Pull Request
-# 任务：编译检查 + 单元测试 + 代码质量（ktlint + detekt + lint）+ 仪器测试 + 覆盖率
+# CI - 持续集成工作流（最终整合版 + 权限修复）
+# 触发：push 到 main/master/develop + Pull Request
+# 策略：PR 只跑快速检查，重型任务（仪器测试、截图、Token 同步）仅 push 时执行
+# 优化：单元测试与覆盖率合并，避免重复执行
+# 修复：所有 Job 显式修复 gradlew 可执行权限
 # ============================================================================
 
 name: CI
@@ -33,6 +35,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Setup JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
@@ -51,10 +56,10 @@ jobs:
         run: ./gradlew :app:compileReleaseKotlin --no-daemon --stacktrace
 
   # ---------------------------------------------------------------------------
-  # Job 2: 单元测试
+  # Job 2: 单元测试 + 覆盖率（合并执行，避免重复测试）
   # ---------------------------------------------------------------------------
   unit-test:
-    name: Unit Tests
+    name: Unit Tests & Coverage
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 30
@@ -62,6 +67,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -72,8 +80,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run Unit Tests
-        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace
+      - name: Run Unit Tests & Generate Kover Report
+        run: ./gradlew :app:testDebugUnitTest :app:koverXmlReport --no-daemon --stacktrace
 
       - name: Upload Test Report
         if: always()
@@ -82,6 +90,14 @@ jobs:
           name: unit-test-report
           path: app/build/reports/tests/testDebugUnitTest/
           retention-days: 7
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kover-coverage-report
+          path: app/build/reports/kover/
+          retention-days: 14
 
   # ---------------------------------------------------------------------------
   # Job 3: 代码质量 - ktlint
@@ -95,6 +111,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -129,6 +148,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -162,6 +184,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -183,51 +208,21 @@ jobs:
           retention-days: 7
 
   # ---------------------------------------------------------------------------
-  # Job 6: 覆盖率（Kover）
-  # ---------------------------------------------------------------------------
-  coverage:
-    name: Coverage (Kover)
-    runs-on: ubuntu-latest
-    needs: unit-test
-    timeout-minutes: 30
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Generate Kover XML Report
-        # Kover 会在 testDebugUnitTest 上插桩；这里再跑一次测试 + 生成报告
-        run: ./gradlew :app:testDebugUnitTest :app:koverXmlReport --no-daemon --stacktrace
-
-      - name: Upload Coverage Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: kover-coverage-report
-          path: app/build/reports/kover/
-          retention-days: 14
-
-  # ---------------------------------------------------------------------------
-  # Job 7: 仪器化测试（Android Emulator）
+  # Job 6: 仪器化测试（仅 push 时执行）
   # ---------------------------------------------------------------------------
   instrumented-test:
     name: Instrumented Tests
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'push'
     timeout-minutes: 45
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -261,7 +256,7 @@ jobs:
           retention-days: 7
 
   # ---------------------------------------------------------------------------
-  # Job 8: 架构图检查（ROADMAP P1-2）
+  # Job 7: 架构图检查
   # ---------------------------------------------------------------------------
   arch-graph:
     name: Architecture Graph Check
@@ -273,8 +268,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install ripgrep (fallback)
-        # ubuntu-latest ships ripgrep, but install explicitly as a safety net.
+      - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
       - name: Verify architecture graph is up-to-date
@@ -283,17 +277,106 @@ jobs:
           ./scripts/arch-graph.sh --check
 
   # ---------------------------------------------------------------------------
-  # Job 9: 构建 APK（验证打包流程）
+  # Job 8: 截图测试（Paparazzi，仅 push 时执行）
+  # ---------------------------------------------------------------------------
+  screenshot-test:
+    name: Screenshot Tests (Paparazzi)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push'
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx libx11-6
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Verify Screenshots
+        run: ./gradlew :app:verifyPaparazziDebug --no-daemon --stacktrace
+
+      - name: Upload Screenshot Diffs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-diffs
+          path: app/build/paparazzi/failures/
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Job 9: Figma Token 同步检查（仅 push 时执行）
+  # ---------------------------------------------------------------------------
+  token-sync:
+    name: Figma Token Sync Check
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push'
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Style Dictionary
+        run: npm install -g style-dictionary
+
+      - name: Verify tokens synced
+        run: |
+          chmod +x scripts/sync-tokens.sh
+          ./scripts/sync-tokens.sh --check
+
+  # ---------------------------------------------------------------------------
+  # Job 10: 生产就绪检查
+  # ---------------------------------------------------------------------------
+  production-check:
+    name: Production Readiness Check
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run production readiness check
+        run: |
+          chmod +x scripts/check-production.sh
+          ./scripts/check-production.sh
+
+  # ---------------------------------------------------------------------------
+  # Job 11: 构建 APK（验证打包流程）
   # ---------------------------------------------------------------------------
   assemble:
     name: Assemble Debug APK
     runs-on: ubuntu-latest
-    needs: [ unit-test, ktlint, detekt, lint, coverage, instrumented-test, arch-graph ]
+    needs: [ unit-test, ktlint, detekt, lint, instrumented-test, arch-graph, screenshot-test, token-sync, production-check ]
     timeout-minutes: 30
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Setup JDK
         uses: actions/setup-java@v4

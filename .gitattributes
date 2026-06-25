@@ -1,0 +1,62 @@
+# ============================================================================
+# .gitattributes - 跨平台文件属性配置
+# 确保 GitHub Actions / Windows / macOS / Linux 行为一致
+# ============================================================================
+
+# 默认所有文本文件用 LF 换行（避免 Windows CRLF 问题）
+* text=auto eol=lf
+
+# Shell 脚本必须 LF + 可执行权限
+*.sh         text eol=lf
+scripts/*    text eol=lf
+
+# Gradle wrapper 脚本必须可执行
+gradlew      text eol=lf
+gradlew.bat  text eol=crlf
+
+# Windows 批处理脚本用 CRLF
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+
+# PowerShell 脚本
+*.ps1        text eol=crlf
+
+# 二进制文件（不做换行转换）
+*.png        binary
+*.jpg        binary
+*.jpeg       binary
+*.gif        binary
+*.ico        binary
+*.pdf        binary
+*.zip        binary
+*.jar        binary
+*.apk        binary
+*.aab        binary
+*.keystore   binary
+*.jks        binary
+
+# JSON / XML / YAML / TOML 用 LF
+*.json       text eol=lf
+*.xml        text eol=lf
+*.yaml       text eol=lf
+*.yml        text eol=lf
+*.toml       text eol=lf
+*.properties text eol=lf
+
+# Kotlin / Java 用 LF
+*.kt         text eol=lf
+*.kts        text eol=lf
+*.java       text eol=lf
+
+# Markdown 用 LF
+*.md         text eol=lf
+
+# Lottie JSON 动画文件（保持 LF）
+assets/lottie/*.json text eol=lf
+
+# Room schema 导出 JSON（保持 LF）
+*.json       text eol=lf
+
+# Git LFS（大文件，按需启用）
+# *.apk filter=lfs diff=lfs merge=lfs -text
+# *.aab filter=lfs diff=lfs merge=lfs -text
