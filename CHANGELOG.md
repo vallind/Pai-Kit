@@ -5,6 +5,18 @@
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-06-25
+
+### Removed
+- 移除 Paparazzi：`PaparazziConvention.kt`、截图测试、CI Job、libs.versions.toml 条目
+- 移除 MockK：全部 5 个测试文件、版本依赖、convention plugin 引用
+- 移除 Konsist：全部 3 个架构测试文件、版本依赖、convention plugin 引用
+- 移除 `DSButtonScreenshotTest.kt`（依赖 Paparazzi）
+- 清理项目中所有 Paparazzi/MockK/Konsist 文案引用（13 个 .md 文件 + 5 个 .sh 脚本）
+
+### Fixed
+- 修复 4 个 Lint Error：`LocalContextConfigurationRead`、`ModifierFactoryUnreferencedReceiver`、`StateFlowValueCalledInComposition`
+
 ## [1.2.0] - 2026-06-25
 
 ### Fixed
